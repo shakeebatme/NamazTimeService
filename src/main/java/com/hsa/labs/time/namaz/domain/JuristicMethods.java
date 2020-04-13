@@ -1,18 +1,34 @@
 package com.hsa.labs.time.namaz.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 public class JuristicMethods {
 
     private boolean shafii; // Shafii (standard)
     private boolean hanafi; // Hanafi
+
+    public JuristicMethods(boolean shafii, boolean hanafi) {
+        this.shafii = shafii;
+        this.hanafi = hanafi;
+    }
+
+    public JuristicMethods() {
+    }
+
+    public boolean isShafii() {
+        return this.shafii;
+    }
+
+    public boolean isHanafi() {
+        return this.hanafi;
+    }
+
+    public void setShafii(boolean shafii) {
+        this.shafii = shafii;
+    }
+
+    public void setHanafi(boolean hanafi) {
+        this.hanafi = hanafi;
+    }
 }

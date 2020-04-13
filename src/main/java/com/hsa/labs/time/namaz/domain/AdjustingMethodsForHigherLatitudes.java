@@ -1,16 +1,8 @@
 package com.hsa.labs.time.namaz.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Component;
 
-@Setter
-@Getter
 @Component
-@AllArgsConstructor
-@NoArgsConstructor
 public class AdjustingMethodsForHigherLatitudes {
 
     // Adjusting Methods for Higher Latitudes
@@ -19,4 +11,45 @@ public class AdjustingMethodsForHigherLatitudes {
     private boolean OneSeventh; // 1/7th of night
     private boolean AngleBased; // angle/60th of night
 
+    public AdjustingMethodsForHigherLatitudes(boolean None, boolean MidNight, boolean OneSeventh, boolean AngleBased) {
+        this.None = None;
+        this.MidNight = MidNight;
+        this.OneSeventh = OneSeventh;
+        this.AngleBased = AngleBased;
+    }
+
+    public AdjustingMethodsForHigherLatitudes() {
+    }
+
+    public boolean isNone() {
+        return this.None;
+    }
+
+    public boolean isMidNight() {
+        return this.MidNight;
+    }
+
+    public boolean isOneSeventh() {
+        return this.OneSeventh;
+    }
+
+    public boolean isAngleBased() {
+        return this.AngleBased;
+    }
+
+    public void setNone(boolean None) {
+        this.None = None;
+    }
+
+    public void setMidNight(boolean MidNight) {
+        this.MidNight = MidNight;
+    }
+
+    public void setOneSeventh(boolean OneSeventh) {
+        this.OneSeventh = OneSeventh;
+    }
+
+    public void setAngleBased(boolean AngleBased) {
+        this.AngleBased = AngleBased;
+    }
 }

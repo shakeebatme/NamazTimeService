@@ -1,12 +1,8 @@
 package com.hsa.labs.time.namaz.domain;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 
-@Setter
-@Getter
 @Component
 public class CalculationMethods {
 
@@ -85,5 +81,69 @@ public class CalculationMethods {
                 .ishaParameterValue(17)
                 .build();
 
+    }
+
+    public CalculationValue getJafari() {
+        return this.jafari;
+    }
+
+    public CalculationValue getKarachi() {
+        return this.karachi;
+    }
+
+    public CalculationValue getIsna() {
+        return this.isna;
+    }
+
+    public CalculationValue getMwl() {
+        return this.mwl;
+    }
+
+    public CalculationValue getMakkah() {
+        return this.makkah;
+    }
+
+    public CalculationValue getEgypt() {
+        return this.egypt;
+    }
+
+    public CalculationValue getCustom() {
+        return this.custom;
+    }
+
+    public CalculationValue getTehran() {
+        return this.tehran;
+    }
+
+    public void setJafari(CalculationValue jafari) {
+        this.jafari = jafari;
+    }
+
+    public void setKarachi(CalculationValue karachi) {
+        this.karachi = karachi;
+    }
+
+    public void setIsna(CalculationValue isna) {
+        this.isna = isna;
+    }
+
+    public void setMwl(CalculationValue mwl) {
+        this.mwl = mwl;
+    }
+
+    public void setMakkah(CalculationValue makkah) {
+        this.makkah = makkah;
+    }
+
+    public void setEgypt(CalculationValue egypt) {
+        this.egypt = egypt;
+    }
+
+    public void setCustom(CalculationValue custom) {
+        this.custom = custom;
+    }
+
+    public void setTehran(CalculationValue tehran) {
+        this.tehran = tehran;
     }
 }

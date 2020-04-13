@@ -1,21 +1,17 @@
-package com.hsa.labs.time.namaz;
+package com.hsa.labs.time.namaz.service;
 
 
 import com.hsa.labs.time.namaz.domain.*;
 import com.hsa.labs.time.namaz.utils.AstronomicalFunctions;
 import com.hsa.labs.time.namaz.utils.TrigonometricFunctions;
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-@Setter
-@Getter
-public class PrayTime {
-
-
+@Service
+public class PrayerTimeService {
 
     private int dhuhrMinutes; // minutes after mid-day for Dhuhr
     private double lat; // latitude
@@ -34,12 +30,12 @@ public class PrayTime {
     // Time Names
     private ArrayList<String> timeNames;
     private String invalidTime; // The string used for invalid times
-    
+
     // ------------------- Calc Method Parameters --------------------
     private int[] offsets;
 
 
-    public PrayTime(TimeFormatter timeFormatter, JuristicMethods juristicMethods, CalculationValue calculationValue, TrigonometricFunctions tf, AstronomicalFunctions af, AdjustingMethodsForHigherLatitudes adjustingMethodsForHigherLatitudes) {
+    public PrayerTimeService(TimeFormatter timeFormatter, JuristicMethods juristicMethods, CalculationValue calculationValue, TrigonometricFunctions tf, AstronomicalFunctions af, AdjustingMethodsForHigherLatitudes adjustingMethodsForHigherLatitudes) {
         this.timeFormatter = timeFormatter;
         this.juristicMethods = juristicMethods;
         this.calculationValue = calculationValue;
@@ -73,15 +69,15 @@ public class PrayTime {
 
     // -------------------- Interface Functions --------------------
     // return prayer times for a given date
-    // return prayer times for a given date
-    private ArrayList<String> getPrayerTimes(Calendar date, double latitude,
-                                             double longitude, double tZone) {
-
+    public ArrayList<String> getPrayerTimes(Calendar date, double latitude,
+                                            double longitude, double tZone) {
+        int[] offsets = {0, 0, 0, 0, 0, 0, 0}; // {Fajr,Sunrise,Dhuhr,Asr,Sunset,Maghrib,Isha}
+        tune(offsets);
         int year = date.get(Calendar.YEAR);
         int month = date.get(Calendar.MONTH);
         int day = date.get(Calendar.DATE);
 
-        return getDatePrayerTimes(year, month+1, day, latitude, longitude, tZone);
+        return getDatePrayerTimes(year, month + 1, day, latitude, longitude, tZone);
     }
 
     private ArrayList<String> getDatePrayerTimes(int year, int month, int day,
@@ -96,12 +92,13 @@ public class PrayTime {
     }
 
     // compute prayer times at given julian date
-    // compute prayer times at given julian date
     private ArrayList<String> computeDayTimes() {
         double[] times = {5, 6, 12, 13, 18, 18, 18}; // default times
         times = computePrayerTimes(times);
         times = adjustTimes(times);
-        times = tuneTimes(times);
+        for (int i = 0; i < times.length; i++) {
+            times[i] = times[i] + this.offsets[i] / 60.0;
+        }
         return adjustTimesFormat(times);
     }
 
@@ -121,10 +118,7 @@ public class PrayTime {
         double Maghrib = this.computeTime(this.calculationValue.getMaghribParameterValue(), t[5]);
         double Isha = this.computeTime(this.calculationValue.getIshaParameterValue(), t[6]);
 
-        double[] CTimes = {fajr, sunrise, Dhuhr, Asr, Sunset, Maghrib, Isha};
-
-        return CTimes;
-
+        return new double[]{fajr, sunrise, Dhuhr, Asr, Sunset, Maghrib, Isha};
     }
 
     // compute time for a given angle G
@@ -184,7 +178,7 @@ public class PrayTime {
         /*hours = (hours + 12) - 1;
         int hrs = (int) hours % 12;
         hrs += 1;*/
-        if (noSuffix == false) {
+        if (!noSuffix) {
             if ((hours >= 0 && hours <= 9) && (minutes >= 0 && minutes <= 9)) {
                 result = "0" + hours + ":0" + Math.round(minutes) + " "
                         + suffix;
@@ -212,6 +206,7 @@ public class PrayTime {
     }
 
     // convert double hours to 12h format with no suffix
+    @SuppressWarnings(value = "unused")
     public String floatToTime12NS(double time) {
         return floatToTime12(time, true);
     }
@@ -247,7 +242,7 @@ public class PrayTime {
         }
 
         if (!this.adjustingMethodsForHigherLatitudes.isNone()) {
-            times = adjustHighLatTimes(times);
+            adjustHighLatTimes(times);
         }
 
         return times;
@@ -362,15 +357,12 @@ public class PrayTime {
         AdjustingMethodsForHigherLatitudes higherLatitudes = new AdjustingMethodsForHigherLatitudes(false, false, false, true);
         TrigonometricFunctions trigonometricFunctions = new TrigonometricFunctions();
         AstronomicalFunctions astronomicalFunctions = new AstronomicalFunctions(trigonometricFunctions);
-        PrayTime prayers = new PrayTime(timeFormatter,
+        PrayerTimeService prayers = new PrayerTimeService(timeFormatter,
                 juristicMethods,
                 isna,
                 trigonometricFunctions,
                 astronomicalFunctions,
                 higherLatitudes);
-
-        int[] offsets = {0, 0, 0, 0, 0, 0, 0}; // {Fajr,Sunrise,Dhuhr,Asr,Sunset,Maghrib,Isha}
-        prayers.tune(offsets);
 
         Date now = new Date();
         Calendar cal = Calendar.getInstance();
@@ -383,5 +375,117 @@ public class PrayTime {
             System.out.println(prayerNames.get(i) + " - " + prayerTimes.get(i));
         }
 
+    }
+
+    public int getDhuhrMinutes() {
+        return this.dhuhrMinutes;
+    }
+
+    public double getLat() {
+        return this.lat;
+    }
+
+    public double getLng() {
+        return this.lng;
+    }
+
+    public double getTimeZone() {
+        return this.timeZone;
+    }
+
+    public double getJDate() {
+        return this.JDate;
+    }
+
+    public TimeFormatter getTimeFormatter() {
+        return this.timeFormatter;
+    }
+
+    public JuristicMethods getJuristicMethods() {
+        return this.juristicMethods;
+    }
+
+    public CalculationValue getCalculationValue() {
+        return this.calculationValue;
+    }
+
+    public TrigonometricFunctions getTf() {
+        return this.tf;
+    }
+
+    public AstronomicalFunctions getAf() {
+        return this.af;
+    }
+
+    public AdjustingMethodsForHigherLatitudes getAdjustingMethodsForHigherLatitudes() {
+        return this.adjustingMethodsForHigherLatitudes;
+    }
+
+    public ArrayList<String> getTimeNames() {
+        return this.timeNames;
+    }
+
+    public String getInvalidTime() {
+        return this.invalidTime;
+    }
+
+    public int[] getOffsets() {
+        return this.offsets;
+    }
+
+    public void setDhuhrMinutes(int dhuhrMinutes) {
+        this.dhuhrMinutes = dhuhrMinutes;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
+    public void setTimeZone(double timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    public void setJDate(double JDate) {
+        this.JDate = JDate;
+    }
+
+    public void setTimeFormatter(TimeFormatter timeFormatter) {
+        this.timeFormatter = timeFormatter;
+    }
+
+    public void setJuristicMethods(JuristicMethods juristicMethods) {
+        this.juristicMethods = juristicMethods;
+    }
+
+    public void setCalculationValue(CalculationValue calculationValue) {
+        this.calculationValue = calculationValue;
+    }
+
+    public void setTf(TrigonometricFunctions tf) {
+        this.tf = tf;
+    }
+
+    public void setAf(AstronomicalFunctions af) {
+        this.af = af;
+    }
+
+    public void setAdjustingMethodsForHigherLatitudes(AdjustingMethodsForHigherLatitudes adjustingMethodsForHigherLatitudes) {
+        this.adjustingMethodsForHigherLatitudes = adjustingMethodsForHigherLatitudes;
+    }
+
+    public void setTimeNames(ArrayList<String> timeNames) {
+        this.timeNames = timeNames;
+    }
+
+    public void setInvalidTime(String invalidTime) {
+        this.invalidTime = invalidTime;
+    }
+
+    public void setOffsets(int[] offsets) {
+        this.offsets = offsets;
     }
 }
