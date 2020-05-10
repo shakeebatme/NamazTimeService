@@ -4,6 +4,7 @@ package com.hsa.labs.time.namaz.service;
 import com.hsa.labs.time.namaz.domain.*;
 import com.hsa.labs.time.namaz.utils.AstronomicalFunctions;
 import com.hsa.labs.time.namaz.utils.TrigonometricFunctions;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Service
+@Slf4j
 public class PrayerTimeService {
 
     private int dhuhrMinutes; // minutes after mid-day for Dhuhr
@@ -77,7 +79,9 @@ public class PrayerTimeService {
         int month = date.get(Calendar.MONTH);
         int day = date.get(Calendar.DATE);
 
-        return getDatePrayerTimes(year, month + 1, day, latitude, longitude, tZone);
+        ArrayList<String> datePrayerTimes = getDatePrayerTimes(year, month + 1, day, latitude, longitude, tZone);
+        log.info(datePrayerTimes.toString());
+        return datePrayerTimes;
     }
 
     private ArrayList<String> getDatePrayerTimes(int year, int month, int day,
@@ -344,38 +348,37 @@ public class PrayerTimeService {
     }
 
     /**
-     * @param args
      */
-    public static void main(String[] args) {
-        double latitude = 42.479064;
-        double longitude = -83.377222;
-        double timezone = -4;
-        // Test Prayer times here
-        TimeFormatter timeFormatter = new TimeFormatter(false, true, false, false);
-        CalculationValue isna = new CalculationMethods().getIsna();
-        JuristicMethods juristicMethods = new JuristicMethods(false, true);
-        AdjustingMethodsForHigherLatitudes higherLatitudes = new AdjustingMethodsForHigherLatitudes(false, false, false, true);
-        TrigonometricFunctions trigonometricFunctions = new TrigonometricFunctions();
-        AstronomicalFunctions astronomicalFunctions = new AstronomicalFunctions(trigonometricFunctions);
-        PrayerTimeService prayers = new PrayerTimeService(timeFormatter,
-                juristicMethods,
-                isna,
-                trigonometricFunctions,
-                astronomicalFunctions,
-                higherLatitudes);
-
-        Date now = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(now);
-
-        ArrayList<String> prayerTimes = prayers.getPrayerTimes(cal, latitude, longitude, timezone);
-        ArrayList<String> prayerNames = prayers.getTimeNames();
-
-        for (int i = 0; i < prayerTimes.size(); i++) {
-            System.out.println(prayerNames.get(i) + " - " + prayerTimes.get(i));
-        }
-
-    }
+//    public static void main(String[] args) {
+//        double latitude = 42.479064;
+//        double longitude = -83.377222;
+//        double timezone = -4;
+//        // Test Prayer times here
+//        TimeFormatter timeFormatter = new TimeFormatter(false, true, false, false);
+//        CalculationValue isna = new CalculationMethods().getIsna();
+//        JuristicMethods juristicMethods = new JuristicMethods(false, true);
+//        AdjustingMethodsForHigherLatitudes higherLatitudes = new AdjustingMethodsForHigherLatitudes(false, false, false, true);
+//        TrigonometricFunctions trigonometricFunctions = new TrigonometricFunctions();
+//        AstronomicalFunctions astronomicalFunctions = new AstronomicalFunctions(trigonometricFunctions);
+//        PrayerTimeService prayers = new PrayerTimeService(timeFormatter,
+//                juristicMethods,
+//                isna,
+//                trigonometricFunctions,
+//                astronomicalFunctions,
+//                higherLatitudes);
+//
+//        Date now = new Date();
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(now);
+//
+//        ArrayList<String> prayerTimes = prayers.getPrayerTimes(cal, latitude, longitude, timezone);
+//        ArrayList<String> prayerNames = prayers.getTimeNames();
+//
+//        for (int i = 0; i < prayerTimes.size(); i++) {
+//            System.out.println(prayerNames.get(i) + " - " + prayerTimes.get(i));
+//        }
+//
+//    }
 
     public int getDhuhrMinutes() {
         return this.dhuhrMinutes;
