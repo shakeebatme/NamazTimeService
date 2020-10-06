@@ -26,3 +26,8 @@ URL: http://localhost:8080/todayPrayerTime
     "isha": "09:35 pm"
 }
 ```
+
+
+
+
+
